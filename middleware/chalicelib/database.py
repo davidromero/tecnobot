@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import pytz
-from chalicelib.validation import all_fields
+from chalicelib.validation import validate_campaign_fields, all_fields
 from uuid import uuid4
 
 logger = logging.getLogger()
@@ -24,11 +24,14 @@ class DynamoDBCampaigns(CampaignsDB):
         logger.info('Adding new contact')
         uid = str(uuid4())[:13]
         new_campaign = make_campaign(campaign, username, uid)
-        logger.info(f'Adding contact: {json.dumps(new_campaign)}')
-        self._table.put_item(
-            Item=new_campaign
-        )
-        return new_campaign.get('campaingid')
+        if validate_campaign_fields(new_campaign):
+            logger.info(f'Adding contact: {json.dumps(new_campaign)}')
+            self._table.put_item(
+                Item=new_campaign
+            )
+            return new_campaign.get('campaingid')
+        else:
+            logger.info("Campaign creation is not valid")
 
 
 def make_campaign(campaign, username, uid):
@@ -51,3 +54,25 @@ def make_campaign(campaign, username, uid):
             new_contact[key] = value.lower().strip()
     print("Making: " + json.dumps(new_contact))
     return new_contact
+
+
+class GeoDB(object):
+    def get_item(self, department, username):
+        pass
+
+
+class DynamoDBGeo(GeoDB):
+    def __init__(self, table_resource):
+        self._table = table_resource
+
+# TODO: Fix DB, Primary Key name
+
+    def get_item(self, department, username=DEFAULT_USERNAME):
+        logger.info(f'Getting department {department}')
+        response = self._table.get_item(
+            Key={'departamento': department, }
+        )
+        if 'Item' in response:
+            return response['Item']
+        logger.error(f'Department {department} not found')
+        return None

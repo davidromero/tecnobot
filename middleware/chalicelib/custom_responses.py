@@ -39,3 +39,44 @@ def post_fail():
         },
         headers=response_headers
     )
+
+
+def get_success(response):
+    return Response(
+        status_code=200,
+        body={
+            'status': 200,
+            'payload': response
+        },
+        headers=response_headers
+    )
+
+
+def get_response(response, departament):
+    if response is None:
+        return not_found(departament)
+    else:
+        return get_success(response)
+
+
+def get_success(response):
+    return Response(
+        status_code=200,
+        body={
+            'status': 200,
+            'payload': response
+        },
+        headers=response_headers
+    )
+
+
+def not_found(departament):
+    message = '{} not found'.format(departament)
+    return Response(
+        status_code=404,
+        body={
+            'status': 404,
+            'payload': message
+        },
+        headers=response_headers
+    )
