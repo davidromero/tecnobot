@@ -4,8 +4,7 @@ import re
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
-
-# TODO: Fix Mandatory phone_number and budget, cant lower() an Int
+# TODO: Use only strings in all fields
 
 mandatory_fields = ['description', 'name', 'service', 'slogan', 'tittle', 'website']
 non_editables = ['campaingid', 'created_by', 'created_timestamp', 'modified_by', 'modified_timestamp', 'active']
@@ -33,9 +32,9 @@ def validate_optional_fields(campaign):
 
 
 def validate_mandatory_fields(campaign):
-    if not (val_len_field(campaign, 'description') & val_len_field(campaign, 'name') & val_len_field(campaign,
-                                                                                                     'service') \
-            & val_len_field(campaign, 'slogan') & val_len_field(campaign, 'tittle')):
+    if not (val_len_field(campaign, 'description') & val_len_field(campaign, 'name') \
+            & val_len_field(campaign, 'service') & val_len_field(campaign, 'slogan') \
+            & val_len_field(campaign, 'tittle')):
         return False
     if 'phone_number' in campaign.keys() and not validate_phone_number(campaign['phone_number']):
         return False

@@ -20,7 +20,7 @@ def get_location(department):
     return custom_responses.get_response(response, department)
 
 
-@app.route('/middleware/campaign', methods=['POST'], cors=cors_config)
+@app.route('/conversation_log/', methods=['POST'], cors=cors_config)
 def add_campaing():
     body = app.current_request.json_body
     new_campaign = get_app_db().add_item(campaign=body)
