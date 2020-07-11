@@ -4,6 +4,7 @@ import logging
 import pytz
 from chalicelib.validation import validate_campaign_fields, all_fields
 from uuid import uuid4
+from chalicelib.fields import *
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -29,31 +30,34 @@ class DynamoDBCampaigns(CampaignsDB):
             self._table.put_item(
                 Item=new_campaign
             )
-            return new_campaign.get('campaingid')
+            return new_campaign.get(CAMPAIGN_ID)
         else:
             logger.info("Campaign creation is not valid")
+            return None
 
 
 def make_campaign(campaign, username, uid):
     now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
-    new_contact = {
+    new_search_terms = str(campaign[QUERY_REQUEST][PARAMETERS]['search_term']).replace('\'', '').replace('[', '')\
+    .replace(']', '')
+    new_campaign = {
         'campaingid': uid,
-        'active': True,
-        'created_by': username,
-        'modified_by': username,
+        'username': username,
+        'active': 'True',
+        'payment_status': 'False',
         'created_timestamp': now,
-        'modified_timestamp': now,
+        'slogan': campaign[QUERY_REQUEST][PARAMETERS][SLOGAN],
+        'budge_amount': str(campaign[QUERY_REQUEST][PARAMETERS][BUDGET][AMOUNT]),
+        'budge_currency': campaign[QUERY_REQUEST][PARAMETERS][BUDGET][CURRENCY],
+        'search_terms': new_search_terms,
+        'phone_number': campaign[QUERY_REQUEST][PARAMETERS][PHONE_NUMBER],
+        'website': campaign[QUERY_REQUEST][PARAMETERS][WEBSITE],
+        'description': campaign[QUERY_REQUEST][PARAMETERS][DESCRIPTION],
+        'business_name': campaign[QUERY_REQUEST][PARAMETERS][BUSINESS_NAME],
+        'history': campaign[QUERY_REQUEST][PARAMETERS][HISTORY],
+        'location': campaign[QUERY_REQUEST][PARAMETERS][LOCATION][COUNTRY],
     }
-    for key in all_fields:
-        value = campaign.get(key, EMPTY_FIELD)
-        if isinstance(value, list):
-            new_contact[key] = value
-        elif value is '':
-            new_contact[key] = '-'
-        else:
-            new_contact[key] = value.lower().strip()
-    print("Making: " + json.dumps(new_contact))
-    return new_contact
+    return new_campaign
 
 
 class GeoDB(object):
@@ -65,7 +69,7 @@ class DynamoDBGeo(GeoDB):
     def __init__(self, table_resource):
         self._table = table_resource
 
-# TODO: Fix DB, Primary Key name
+    # TODO: Fix DB, Primary Key name
 
     def get_item(self, department, username=DEFAULT_USERNAME):
         logger.info(f'Getting department {department}')
@@ -76,3 +80,4 @@ class DynamoDBGeo(GeoDB):
             return response['Item']
         logger.error(f'Department {department} not found')
         return None
+
