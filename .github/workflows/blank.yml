@@ -27,14 +27,11 @@ jobs:
       run: echo Hello, world!
 
     # Runs a set of commands using the runners shell
+    # To run locally $(sudo act) sudo is not needed
     - name: Run a multi-line script
       run: |
-    # To run locally $(sudo act) sudo is not needed
         sudo apt-get update
-    # apt-get upgrade
         sudo apt-get install jq -y
-    # apt-get install jq -y
         echo Running Tests
-    # chmod +x ./test.sh
         sudo chmod +x ./test.sh
         ./test.sh
