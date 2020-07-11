@@ -1,6 +1,9 @@
 from os import environ
 from chalice import CORSConfig
 
+'''
+DynamoDB
+'''
 TABLE_NAME = environ.get('TABLE_NAME')
 TABLE_NAME2 = environ.get('TABLE_NAME2')
 AWS_DEFAULT_REGION = environ.get('AWS_DEFAULT_REGION')

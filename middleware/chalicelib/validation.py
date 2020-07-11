@@ -1,14 +1,18 @@
 import logging
 import re
+from chalicelib.fields import *
 
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
-# TODO: Use only strings in all fields
+mandatory_fields = [SLOGAN, BUDGET_AMOUNT, BUDGET_CURRENCY, SEARCH_TERMS, PHONE_NUMBER, WEBSITE, DESCRIPTION, \
+                    BUSINESS_NAME, HISTORY, LOCATION]
+non_editables = [CAMPAIGN_ID, USERNAME, ACTIVE, PAYMENT_STATUS, CREATED_TIMESTAMP]
+all_fields = [CAMPAIGN_ID, USERNAME, ACTIVE, PAYMENT_STATUS, CREATED_TIMESTAMP, SLOGAN, BUDGET_AMOUNT, \
+              BUDGET_CURRENCY, SEARCH_TERMS, PHONE_NUMBER, WEBSITE, DESCRIPTION, BUSINESS_NAME, HISTORY, \
+              LOCATION]
 
-mandatory_fields = ['description', 'name', 'service', 'slogan', 'tittle', 'website']
-non_editables = ['campaingid', 'created_by', 'created_timestamp', 'modified_by', 'modified_timestamp', 'active']
-all_fields = ['description', 'location', 'name', 'service', 'slogan', 'tittle', 'website']
+budgets = ['5', '10', '15', '25', '50', '100' '200']
 
 
 def validate_campaign_fields(new_campaign):
@@ -32,11 +36,13 @@ def validate_optional_fields(campaign):
 
 
 def validate_mandatory_fields(campaign):
-    if not (val_len_field(campaign, 'description') & val_len_field(campaign, 'name') \
-            & val_len_field(campaign, 'service') & val_len_field(campaign, 'slogan') \
-            & val_len_field(campaign, 'tittle')):
+    if not (val_len_field(campaign, SLOGAN) & val_len_field(campaign, BUDGET_CURRENCY) \
+            & val_len_field(campaign, SEARCH_TERMS) & val_len_field(campaign, WEBSITE) \
+            & val_len_field(campaign, DESCRIPTION) & val_len_field(campaign, BUSINESS_NAME) \
+            & val_len_field(campaign, HISTORY) & val_len_field(campaign, LOCATION) & \
+            val_budget_amount(campaign, BUDGET_AMOUNT)):
         return False
-    if 'phone_number' in campaign.keys() and not validate_phone_number(campaign['phone_number']):
+    if PHONE_NUMBER in campaign.keys() and not validate_phone_number(campaign[PHONE_NUMBER]):
         return False
     return True
 
@@ -69,7 +75,14 @@ def validate_phone_number(phone_number):
 
 
 def val_len_field(campaign, field):
-    if len(campaign[field]) < 3 or len(campaign[field]) > 99:
+    if len(campaign[field]) < 3 or len(campaign[field]) > 130:
+        print('Error in field ' + field)
         logger.error(str + ' is invalid')
         return False
     return True
+
+
+def val_budget_amount(campaign, field):
+    if campaign[field] in budgets:
+        return True
+    return False
