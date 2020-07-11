@@ -9,32 +9,29 @@ declare -a dep=("alta%20verapaz" "baja%20verapaz" "solola" "chimaltenango"
 "chiquimula" "el%20progreso" "escuintla" "guatemala" "huehuetenango" "izabal" 
 "jalapa" "jutiapa" "peten" "quetzaltenango" "quiche" "retalhuleu" "sacatepequez" 
 "san%20marcos" "santa%20rosa" "solola" "suchitepequez" "totonicapan" "zacapa" ) 
-deployed_end_p='https://oxytg57ynl.execute-api.us-east-1.amazonaws.com/api'
+deployed_end_p='https://c8i8vtg8dl.execute-api.us-east-1.amazonaws.com/api/'
 geo='/geo/'
 campaign='/middleware/campaign'
 ERR=1
 
-echo -e $WHITE_COLOR 'Testing endpoint Geo Service for ' $deployed_end_p 
+echo $WHITE_COLOR 'Testing endpoint Geo Service for ' $deployed_end_p 
 for i in "${dep[@]}"
 do
-    ERR=1
     if [[ ERR -eq 1 ]]; then
         res=$(curl -sL -w "%{http_code}\\n" "$deployed_end_p""$geo""$i" -o out.json)
         if [[ res -eq 200 ]]; then
             diff <(jq -S '.payload' out.json) <(jq -S . "$i".json 2>/dev/null) &>/dev/null
             ret=$?
             if [[ ret -eq 0 ]]; then
-                echo -e $GREEN_COLOR "Passed test for " "$i"
+                echo $GREEN_COLOR "Passed test for " "$i"
             else
-                echo -e $RED_COLOR "Geo Test (Bad http body) for" "$i"
-                ERR=0
+                echo $RED_COLOR "Geo Test (Bad http body) for" "$i"
             fi
         else
-            echo -e $RED_COLOR "Geo Test (Bad HTTP response Code) for " "$i"
-            ERR=0
+            echo $RED_COLOR "Geo Test (Bad HTTP response Code) for " "$i"
         fi
     else
-        echo -e $RED_COLOR "Test Failed"
+        echo $RED_COLOR "Test Failed"
 #        exit
     fi
 done
