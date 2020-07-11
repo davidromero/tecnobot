@@ -38,8 +38,8 @@ class DynamoDBCampaigns(CampaignsDB):
 
 def make_campaign(campaign, username, uid):
     now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
-    new_search_terms = str(campaign[QUERY_REQUEST][PARAMETERS]['search_term']).replace('\'', '').replace('[', '')\
-    .replace(']', '')
+    new_search_terms = str(campaign[QUERY_REQUEST][PARAMETERS]['search_term']).replace('\'', '').replace('[', '') \
+        .replace(']', '')
     new_campaign = {
         'campaingid': uid,
         'username': username,
@@ -80,4 +80,3 @@ class DynamoDBGeo(GeoDB):
             return response['Item']
         logger.error(f'Department {department} not found')
         return None
-

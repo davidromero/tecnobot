@@ -5,10 +5,10 @@ from chalicelib.fields import *
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
-mandatory_fields = [SLOGAN, BUDGE_AMOUNT, BUDGET_CURRENCY, SEARCH_TERMS, PHONE_NUMBER, WEBSITE, DESCRIPTION, \
+mandatory_fields = [SLOGAN, BUDGET_AMOUNT, BUDGET_CURRENCY, SEARCH_TERMS, PHONE_NUMBER, WEBSITE, DESCRIPTION, \
                     BUSINESS_NAME, HISTORY, LOCATION]
 non_editables = [CAMPAIGN_ID, USERNAME, ACTIVE, PAYMENT_STATUS, CREATED_TIMESTAMP]
-all_fields = [CAMPAIGN_ID, USERNAME, ACTIVE, PAYMENT_STATUS, CREATED_TIMESTAMP, SLOGAN, BUDGE_AMOUNT, \
+all_fields = [CAMPAIGN_ID, USERNAME, ACTIVE, PAYMENT_STATUS, CREATED_TIMESTAMP, SLOGAN, BUDGET_AMOUNT, \
               BUDGET_CURRENCY, SEARCH_TERMS, PHONE_NUMBER, WEBSITE, DESCRIPTION, BUSINESS_NAME, HISTORY, \
               LOCATION]
 
@@ -40,7 +40,7 @@ def validate_mandatory_fields(campaign):
             & val_len_field(campaign, SEARCH_TERMS) & val_len_field(campaign, WEBSITE) \
             & val_len_field(campaign, DESCRIPTION) & val_len_field(campaign, BUSINESS_NAME) \
             & val_len_field(campaign, HISTORY) & val_len_field(campaign, LOCATION) & \
-            val_budget_amount(campaign, BUDGE_AMOUNT)):
+            val_budget_amount(campaign, BUDGET_AMOUNT)):
         return False
     if PHONE_NUMBER in campaign.keys() and not validate_phone_number(campaign[PHONE_NUMBER]):
         return False
