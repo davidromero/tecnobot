@@ -12,7 +12,7 @@ EMPTY_FIELD = '-'
 
 
 class CampaignsDB(object):
-    def add_item(self, contact, username):
+    def add_item(self, item, username):
         pass
 
 
@@ -21,11 +21,11 @@ class DynamoDBCampaigns(CampaignsDB):
         self._table = table_resource
 
     def add_item(self, campaign, username=DEFAULT_USERNAME):
-        logger.info('Adding new contact')
+        logger.info('Adding new conversation')
         uid = str(uuid4())[:13]
         new_campaign = make_campaign(campaign, username, uid)
         if validate_campaign_fields(new_campaign):
-            logger.info(f'Adding contact: {json.dumps(new_campaign)}')
+            logger.info(f'Adding conversation: {json.dumps(new_campaign)}')
             self._table.put_item(
                 Item=new_campaign
             )
@@ -55,24 +55,3 @@ def make_campaign(campaign, username, uid):
     print("Making: " + json.dumps(new_contact))
     return new_contact
 
-
-class GeoDB(object):
-    def get_item(self, department, username):
-        pass
-
-
-class DynamoDBGeo(GeoDB):
-    def __init__(self, table_resource):
-        self._table = table_resource
-
-# TODO: Fix DB, Primary Key name
-
-    def get_item(self, department, username=DEFAULT_USERNAME):
-        logger.info(f'Getting department {department}')
-        response = self._table.get_item(
-            Key={'departamento': department, }
-        )
-        if 'Item' in response:
-            return response['Item']
-        logger.error(f'Department {department} not found')
-        return None

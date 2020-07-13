@@ -7,7 +7,7 @@ response_headers = {'Content-Type': 'application/json',
 def get_base_res():
     return Response(
         status_code=200,
-        body={'status': 200, 'payload': 'middleware appointments service running...'},
+        body={'status': 200, 'payload': 'Tecnobot webhook service running...'},
         headers=response_headers
     )
 
@@ -35,7 +35,7 @@ def post_fail():
         status_code=400,
         body={
             'status': 400,
-            'payload': 'Campaing could not be inserted.'
+            'payload': 'Campaign could not be inserted.'
         },
         headers=response_headers
     )
@@ -57,17 +57,6 @@ def get_response(response, departament):
         return not_found(departament)
     else:
         return get_success(response)
-
-
-def get_success(response):
-    return Response(
-        status_code=200,
-        body={
-            'status': 200,
-            'payload': response
-        },
-        headers=response_headers
-    )
 
 
 def not_found(departament):

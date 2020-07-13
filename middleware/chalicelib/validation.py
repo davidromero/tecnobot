@@ -4,11 +4,10 @@ import re
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
-# TODO: Use only strings in all fields
 
-mandatory_fields = ['description', 'name', 'service', 'slogan', 'tittle', 'website']
+mandatory_fields = ['description', 'name', 'service', 'slogan', 'title', 'website']
 non_editables = ['campaingid', 'created_by', 'created_timestamp', 'modified_by', 'modified_timestamp', 'active']
-all_fields = ['description', 'location', 'name', 'service', 'slogan', 'tittle', 'website']
+all_fields = ['description', 'location', 'name', 'service', 'slogan', 'title', 'website']
 
 
 def validate_campaign_fields(new_campaign):
