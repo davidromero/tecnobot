@@ -4,16 +4,14 @@ import logging
 import pytz
 from chalicelib.validation import validate_campaign_fields, all_fields
 from uuid import uuid4
-from chalicelib.fields import *
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-DEFAULT_USERNAME = 'local'
 EMPTY_FIELD = '-'
 
 
 class CampaignsDB(object):
-    def add_item(self, item, username):
+    def add_item(self, item):
         pass
 
 
@@ -21,41 +19,41 @@ class DynamoDBCampaigns(CampaignsDB):
     def __init__(self, table_resource):
         self._table = table_resource
 
-    def add_item(self, campaign, username=DEFAULT_USERNAME):
+    def add_item(self, campaign):
         logger.info('Adding new conversation')
         uid = str(uuid4())[:13]
-        new_campaign = make_campaign(campaign, username, uid)
+        new_campaign = make_campaign(campaign, uid)
         if validate_campaign_fields(new_campaign):
-            logger.info(f'Adding conversation: {json.dumps(new_campaign)}')
+            logger.info(f'Inserting conversation: {json.dumps(new_campaign)}')
             self._table.put_item(
                 Item=new_campaign
             )
-            return new_campaign.get(CAMPAIGN_ID)
+            return uid
         else:
             logger.info("Campaign creation is not valid")
             return None
 
 
-def make_campaign(campaign, username, uid):
+def make_campaign(campaign, uid):
     now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
-    new_search_terms = str(campaign[QUERY_REQUEST][PARAMETERS]['search_term']).replace('\'', '').replace('[', '') \
+    params = campaign['queryResult']['parameters']
+    new_search_terms = str(params['search_term']).replace('\'', '').replace('[', '') \
         .replace(']', '')
     new_campaign = {
         'campaingid': uid,
-        'username': username,
-        'active': 'True',
-        'payment_status': 'False',
+        'active': True,
+        'payment_status': False,
         'created_timestamp': now,
-        'slogan': campaign[QUERY_REQUEST][PARAMETERS][SLOGAN],
-        'budge_amount': str(campaign[QUERY_REQUEST][PARAMETERS][BUDGET][AMOUNT]),
-        'budge_currency': campaign[QUERY_REQUEST][PARAMETERS][BUDGET][CURRENCY],
+        'slogan': params['slogan'],
+        'budget_amount': params['budget']['amount'],
+        'budget_currency': params['budget']['currency'],
         'search_terms': new_search_terms,
-        'phone_number': campaign[QUERY_REQUEST][PARAMETERS][PHONE_NUMBER],
-        'website': campaign[QUERY_REQUEST][PARAMETERS][WEBSITE],
-        'description': campaign[QUERY_REQUEST][PARAMETERS][DESCRIPTION],
-        'business_name': campaign[QUERY_REQUEST][PARAMETERS][BUSINESS_NAME],
-        'history': campaign[QUERY_REQUEST][PARAMETERS][HISTORY],
-        'location': campaign[QUERY_REQUEST][PARAMETERS][LOCATION][COUNTRY],
+        'phone': params['phone_number'],
+        'website': params['website'],
+        'description': params['description'],
+        'business_name': params['business_name'],
+        'history': params['history'],
+        'location': params['location']['country'],
     }
     return new_campaign
 

@@ -23,8 +23,15 @@ def post_success(uid):
     return Response(
         status_code=201,
         body={
-            'status': 201,
-            'payload': uid
+          "fulfillmentMessages": [
+            {
+              "text": {
+                "text": [
+                  f"{uid} new campaign"
+                ]
+              }
+            }
+          ]
         },
         headers=response_headers
     )
