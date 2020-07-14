@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from os import environ
-from googleads import adwords, oauth2
+from googleads import adwords, oauth2, common
 
 # OAuthClient
 CLIENT_ID = environ.get('CLIENT_ID')
@@ -14,7 +14,7 @@ USER_AGENT = environ.get('USER_AGENT')
 CLIENT_CUSTOMER_ID = environ.get('CLIENT_CUSTOMER_ID')
 
 
-def main(client):
+def main(client, campaign_name):
     # Initialize appropriate services.
     campaign_service = client.GetService('CampaignService', version='v201809')
     budget_service = client.GetService('BudgetService', version='v201809')
@@ -41,7 +41,7 @@ def main(client):
     operations = [{
         'operator': 'ADD',
         'operand': {
-            'name': 'Created within lambda #%s' % uuid.uuid4(),
+            'name': campaign_name + ' #%s' % uuid.uuid4(),
             'status': 'ELIGIBLE',
             'biddingStrategyConfiguration': {
                 'biddingStrategyType': 'MANUAL_CPC'
@@ -57,17 +57,13 @@ def main(client):
     }]
     campaigns = campaign_service.mutate(operations)
 
-    # Display results.
-    for campaign in campaigns['value']:
-        print(('Campaign with name "%s" and id "%s" was added.'
-               % (campaign['name'], campaign['id'])))
 
-
-def add():
+def add(name):
     oauth2_client = oauth2.GoogleRefreshTokenClient(
         CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
 
-    adwords_client = adwords.AdWordsClient(
-        DEVELOPER_TOKEN, oauth2_client, USER_AGENT,
-        client_customer_id=CLIENT_CUSTOMER_ID)
-    main(adwords_client)
+    adwords_client = adwords.AdWordsClient(DEVELOPER_TOKEN, oauth2_client, USER_AGENT,
+                                           client_customer_id=CLIENT_CUSTOMER_ID)
+
+    adwords_client.cache = common.ZeepServiceProxy.NO_CACHE
+    main(adwords_client, name)
