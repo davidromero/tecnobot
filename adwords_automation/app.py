@@ -2,7 +2,7 @@ from chalice import Chalice
 from chalicelib import add_campaigns
 from chalicelib import custom_responses
 
-app = Chalice(app_name='google_ads')
+app = Chalice(app_name='adwords_automation')
 
 
 @app.route('/', methods=['GET'])
