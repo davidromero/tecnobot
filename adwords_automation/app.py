@@ -1,29 +1,31 @@
 from chalice import Chalice
+from chalicelib import add_campaigns, custom_responses, database
+import boto3 as boto3
+from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION
 
 app = Chalice(app_name='adwords_automation')
+_DB = None
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    return {'hello': 'world'}
+    return custom_responses.get_base_res()
 
 
-# The view function above will return {"hello": "world"}
-# whenever you make an HTTP GET request to '/'.
-#
-# Here are a few more examples:
-#
-# @app.route('/hello/{name}')
-# def hello_name(name):
-#    # '/hello/james' -> {"hello": "james"}
-#    return {'hello': name}
-#
-# @app.route('/users', methods=['POST'])
-# def create_user():
-#     # This is the JSON body the user sent in their POST request.
-#     user_as_json = app.current_request.json_body
-#     # We'll echo the json body back to the user in a 'user' key.
-#     return {'user': user_as_json}
-#
-# See the README documentation for more examples.
-#
+@app.route('/adwords', methods=['GET'])
+def add_campaign():
+    campaigns_list = get_app_db().list_all_items()
+    for Item in campaigns_list:
+        if (Item['payment_status'] is True) & (Item['active'] is False):
+            add_campaigns.add(Item['business_name'])
+            print('created campaign for name: ' + Item['business_name'])
+    return custom_responses.get_campaigns(campaigns_list)
+
+
+def get_app_db():
+    global _DB
+    if _DB is None:
+        _DB = database.DynamoDBCampaigns(
+            boto3.Session().resource(service_name='dynamodb', region_name=AWS_DEFAULT_REGION).Table(TABLE_NAME)
+        )
+    return _DB
