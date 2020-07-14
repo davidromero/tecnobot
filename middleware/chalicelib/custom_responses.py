@@ -23,15 +23,32 @@ def post_success(uid):
     return Response(
         status_code=201,
         body={
-          "fulfillmentMessages": [
-            {
-              "text": {
-                "text": [
-                  f"{uid} new campaign"
-                ]
-              }
-            }
-          ]
+            "fulfillmentMessages": [
+                {
+                    "text": {
+                        "text": [
+                            "Muchas gracias por la información. ¡Estamos listos para lanzar tu campaña publicitaria! Por último necesitamos que ingreses al siguiente enlace para ingresar tu método de pago y tu campaña publicitaria iniciará."
+                        ]
+                    },
+                    "platform": "FACEBOOK"
+                },
+                {
+                    "text": {
+                        "text": [
+                            "https://payment-link.com"
+                        ]
+                    },
+                    "platform": "FACEBOOK"
+                },
+                {
+                    "text": {
+                        "text": [
+                            "¡Eso sería todo! Si tienes alguna duda o pregunta puedes comunicarte directamente con nuestro equipo a info@tecnometro.net o puedes escribirnos a (502) 3517-7047"
+                        ]
+                    },
+                    "platform": "FACEBOOK"
+                }
+            ]
         },
         headers=response_headers
     )

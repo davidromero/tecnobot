@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+
 import pytz
 from chalicelib.validation import validate_campaign_fields, all_fields
 from uuid import uuid4
@@ -45,7 +46,7 @@ def make_campaign(campaign, uid):
         'payment_status': False,
         'created_timestamp': now,
         'slogan': params['slogan'],
-        'budget_amount': params['budget']['amount'],
+        'budget_amount': int(params['budget']['amount']),
         'budget_currency': params['budget']['currency'],
         'search_terms': new_search_terms,
         'phone': params['phone_number'],

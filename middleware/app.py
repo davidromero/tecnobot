@@ -1,7 +1,7 @@
 import boto3 as boto3
 from chalice import Chalice
 from chalicelib import custom_responses, database
-from chalicelib.config import TABLE_NAME, TABLE_NAME2, AWS_DEFAULT_REGION, cors_config
+from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
 
 app = Chalice(app_name='middleware')
 _DB = None
