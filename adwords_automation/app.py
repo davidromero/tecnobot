@@ -1,6 +1,6 @@
-from chalice import Chalice
-from chalicelib import add_campaigns, custom_responses, database
 import boto3 as boto3
+from chalice import Chalice
+from chalicelib import adwords_api, custom_responses, database
 from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION
 
 app = Chalice(app_name='adwords_automation')
@@ -14,11 +14,9 @@ def index():
 
 @app.route('/adwords', methods=['GET'])
 def add_campaign():
-    campaigns_list = get_app_db().list_all_items()
-    for Item in campaigns_list:
-        if (Item['payment_status'] is True) & (Item['active'] is False):
-            add_campaigns.add(Item['business_name'])
-            print('created campaign for name: ' + Item['business_name'])
+    campaigns_list = get_app_db().list_eligible_items()
+    for campaign in campaigns_list:
+        adwords_api.init_campaign(campaign)
     return custom_responses.get_campaigns(campaigns_list)
 
 

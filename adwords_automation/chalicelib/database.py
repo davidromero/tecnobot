@@ -1,13 +1,13 @@
 import logging
+from boto3.dynamodb.conditions import Attr
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-DEFAULT_USERNAME = 'local'
 EMPTY_FIELD = '-'
 
 
 class CampaignDB(object):
-    def list_items(self, username):
+    def list_items(self):
         pass
 
 
@@ -15,7 +15,7 @@ class DynamoDBCampaigns(CampaignDB):
     def __init__(self, table_resource):
         self._table = table_resource
 
-    def list_all_items(self, username=DEFAULT_USERNAME):
-        logger.info('Listing all campaigns')
-        response = self._table.scan()
+    def list_eligible_items(self):
+        logger.info('Listing active paid campaigns')
+        response = self._table.scan(FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True))
         return response['Items']

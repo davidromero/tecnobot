@@ -1,17 +1,15 @@
 import datetime
+import json
 import uuid
-from os import environ
-from googleads import adwords, oauth2, common
+import logging
 
-# OAuthClient
-CLIENT_ID = environ.get('CLIENT_ID')
-CLIENT_SECRET = environ.get('CLIENT_SECRET')
-REFRESH_TOKEN = environ.get('REFRESH_TOKEN')
+from googleads import adwords, common
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
-# Adwords API
-DEVELOPER_TOKEN = environ.get('DEVELOPER_TOKEN')
-USER_AGENT = environ.get('USER_AGENT')
-CLIENT_CUSTOMER_ID = environ.get('CLIENT_CUSTOMER_ID')
+
+def init_campaign(campaign):
+    logger.info(campaign)
 
 
 def main(client, campaign_name):
@@ -59,11 +57,7 @@ def main(client, campaign_name):
 
 
 def add(name):
-    oauth2_client = oauth2.GoogleRefreshTokenClient(
-        CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
-
-    adwords_client = adwords.AdWordsClient(DEVELOPER_TOKEN, oauth2_client, USER_AGENT,
-                                           client_customer_id=CLIENT_CUSTOMER_ID)
+    adwords_client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
 
     adwords_client.cache = common.ZeepServiceProxy.NO_CACHE
     main(adwords_client, name)

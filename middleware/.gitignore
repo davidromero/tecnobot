@@ -1,6 +1,0 @@
-# Created by .ignore support plugin (hsz.mobi)
-__pycache__/
-.idea/
-venv/
-*/.chalice/deployments/
-*/chalicelib/credentials/
