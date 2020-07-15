@@ -1,23 +1,33 @@
-import datetime
-import json
-import uuid
+from datetime import datetime, timedelta
 import logging
+import uuid
 
 from googleads import adwords, common
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def init_campaign(campaign):
-    logger.info(campaign)
+    logger.info(f"Starting campaign creation")
+    campaign_service, budget_service = get_services()
+    logger.info(f"Creating a new budget of ${campaign['budget_amount']}")
+    budget_id = create_budget(budget_service)
+    logger.info(f"Creating a new campaign for {campaign['business_name']}")
+    campaign_id = create_campaign(campaign_service, budget_id, campaign['business_name'])
+    # logger.info(f"Creating a new ad for {campaign['website']}")
+    logger.info('Campaign published')
 
 
-def main(client, campaign_name):
-    # Initialize appropriate services.
-    campaign_service = client.GetService('CampaignService', version='v201809')
-    budget_service = client.GetService('BudgetService', version='v201809')
+def get_services():
+    adwords_client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
+    adwords_client.cache = common.ZeepServiceProxy.NO_CACHE
+    campaign_service = adwords_client.GetService('CampaignService', version='v201809')
+    budget_service = adwords_client.GetService('BudgetService', version='v201809')
+    return campaign_service, budget_service
 
-    # Create a budget, which can be shared by multiple campaigns.
+
+def create_budget(budget_service):
     budget = {
         'name': 'Interplanetary budget #%s' % uuid.uuid4(),
         'amount': {
@@ -30,34 +40,23 @@ def main(client, campaign_name):
         'operator': 'ADD',
         'operand': budget
     }]
+    return budget_service.mutate(budget_operations)['value'][0]['budgetId']
 
-    # Add the budget.
-    budget_id = budget_service.mutate(budget_operations)['value'][0][
-        'budgetId']
 
-    # Construct operations and add campaigns.
+def create_campaign(campaign_service, budget_id, campaign_name):
     operations = [{
         'operator': 'ADD',
         'operand': {
-            'name': campaign_name + ' #%s' % uuid.uuid4(),
+            'name': f"{datetime.now().strftime('%Y%m%d')} - {campaign_name}",
             'status': 'ELIGIBLE',
             'biddingStrategyConfiguration': {
-                'biddingStrategyType': 'MANUAL_CPC'
+                'biddingStrategyType': 'PAGE_ONE_PROMOTED'
             },
-            'endDate': (datetime.datetime.now() +
-                        datetime.timedelta(365)).strftime('%Y%m%d'),
-            # Note that only the budgetId is required
+            'endDate': (datetime.now() + timedelta(365)).strftime('%Y%m%d'),
             'budget': {
                 'budgetId': budget_id
             },
-            'advertisingChannelType': 'DISPLAY'
+            'advertisingChannelType': 'SEARCH'
         }
     }]
-    campaigns = campaign_service.mutate(operations)
-
-
-def add(name):
-    adwords_client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
-
-    adwords_client.cache = common.ZeepServiceProxy.NO_CACHE
-    main(adwords_client, name)
+    return campaign_service.mutate(operations)

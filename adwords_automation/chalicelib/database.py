@@ -10,6 +10,9 @@ class CampaignDB(object):
     def list_items(self):
         pass
 
+    def update_item(self, uid, body):
+        pass
+
 
 class DynamoDBCampaigns(CampaignDB):
     def __init__(self, table_resource):
