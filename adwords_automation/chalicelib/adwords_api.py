@@ -29,11 +29,11 @@ def get_services():
 
 def create_budget(budget_service):
     budget = {
-        'name': 'Interplanetary budget #%s' % uuid.uuid4(),
         'amount': {
             'microAmount': '5000000'
         },
-        'deliveryMethod': 'STANDARD'
+        'deliveryMethod': 'STANDARD',
+        'isExplicitlyShared': False,
     }
 
     budget_operations = [{
@@ -50,11 +50,11 @@ def create_campaign(campaign_service, budget_id, campaign_name):
             'name': f"{datetime.now().strftime('%Y%m%d')} - {campaign_name}",
             'status': 'ELIGIBLE',
             'biddingStrategyConfiguration': {
-                'biddingStrategyType': 'PAGE_ONE_PROMOTED'
+                'biddingStrategyType': 'TARGET_SPEND'
             },
             'endDate': (datetime.now() + timedelta(365)).strftime('%Y%m%d'),
             'budget': {
-                'budgetId': budget_id
+                'budgetId': budget_id,
             },
             'advertisingChannelType': 'SEARCH'
         }
