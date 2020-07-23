@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import uuid
+import pytz
 
 from googleads import adwords, common
 
@@ -47,7 +48,7 @@ def create_campaign(campaign_service, budget_id, campaign_name):
     operations = [{
         'operator': 'ADD',
         'operand': {
-            'name': f"{datetime.now().strftime('%Y%m%d')} - {campaign_name}",
+            'name': f"{(datetime.now(pytz.timezone('America/Guatemala'))  + timedelta(365)).strftime('%m/%d/%Y, %H:%M:%S')} - {campaign_name}",
             'status': 'ELIGIBLE',
             'biddingStrategyConfiguration': {
                 'biddingStrategyType': 'TARGET_SPEND'
