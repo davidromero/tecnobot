@@ -16,7 +16,7 @@ def index():
 def add_campaign():
     campaigns_list = get_app_db().list_eligible_items()
     for campaign in campaigns_list:
-        adwords_api.init_campaign(campaign)
+        adwords_api.init_adwords(campaign)
     return custom_responses.get_campaigns(campaigns_list)
 
 
