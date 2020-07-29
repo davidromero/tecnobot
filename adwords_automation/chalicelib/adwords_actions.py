@@ -89,10 +89,10 @@ def create_add_extended_text(client, ad_group_id, campaign):
                 'ad': {
                     'xsi_type': 'ExpandedTextAd',
                     'headlinePart1': campaign['business_name'],
-                    'headlinePart2': campaign['slogan'][:15],
-                    'headlinePart3': 'Tel: ' + campaign['phone'],
-                    'description': campaign['description'],
-                    'description2': campaign['search_terms'],
+                    'headlinePart2': campaign['description'][:30],
+                    'headlinePart3': campaign['slogan'],
+                    'description': campaign['history'],
+                    'description2': '',
                     'finalUrls': 'https://' + campaign['website'],
                 },
                 # Add status, ready to publish
