@@ -5,11 +5,11 @@ response_headers = {'Content-Type': 'application/json',
                     'Access-Control-Allow-Headers': 'Content-Type'}
 
 
-def post_response(new_payment):
+def post_response(new_payment, message):
     if new_payment is not None:
         return post_success()
     else:
-        return post_fail()
+        return post_fail(message)
 
 
 def post_success():
@@ -23,12 +23,12 @@ def post_success():
     )
 
 
-def post_fail():
+def post_fail(message):
     return Response(
         status_code=400,
         body={
             'status': 400,
-            'payload': 'Payment could not be Accepted'
+            'payload': message
         },
         headers=response_headers
     )
