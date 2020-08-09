@@ -1,68 +1,101 @@
 import logging
 import chalicelib.config as config
-import io
+from chalicelib.config import SMTP_USERNAME, SMTP_PASSWORD, SES_AUTH_FROM_EMAIL, TO_ADDR, FROM_EMAIL
+from chalicelib.regex import get_payment_value
 import email.utils
 import imaplib
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+payment_fields = ('transaction_number', 'payment_method', 'name', 'email', 'timestamp', 'card_number', 'order_detail',
+                  'total')
 
-def get_messages(transaction_number):
+
+def setup_mail(transaction_number):
     mail = imaplib.IMAP4_SSL('imap.gmail.com', 993)
     mail.login(config.EMAIL_ADDR, config.PASSWORD)
     mail.list()
     mail.select('INBOX')
     result, data = mail.uid('search', None, 'ALL')
+    mail, payment, error_message = get_messages(mail, data, transaction_number)
+    mail.close()
+    mail.logout()
+    return payment, error_message
+
+
+def get_messages(mail, data, transaction_number):
     i = len(data[0].split())
-    new_payment = {}
     for x in range(i):
-        latest_email_uid = data[0].split()[x]
-        result, email_data = mail.uid('fetch', latest_email_uid, '(RFC822)')
-        raw_email = email_data[0][1]
-        raw_email_string = raw_email.decode('utf-8')
-        email_message = email.message_from_string(raw_email_string)
-
+        error_message = ''
+        email_message, latest_email_uid = get_body_mail(mail, data, x)
         email_from = str(email.header.make_header(email.header.decode_header(email_message['From'])))
-        logger.info(
-            f"Verifing emails from {config.FROM_EMAIL} Check the sender of the mail if Payment cannot be processed")
-
-        found = False
         for part in email_message.walk():
-            if part.get_content_type() == 'text/plain':
-                body = part.get_payload()
-                buf = io.StringIO(body)
-                lines = buf.readlines()
-                count = 0
-                new_payment = {}
-                for line in lines:
-                    if 'No. Transacci=C3=B3n' in line:
-                        if (transaction_number in lines[count + 1].replace('\r', '').replace('\n', '')) and \
-                                (config.FROM_EMAIL in email_from):
-                            new_payment['transaction_number'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                            found = True
-                    elif 'Medio de Pago' in line:
-                        new_payment['payment_method'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Nombre' in line:
-                        new_payment['name'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Email' in line:
-                        new_payment['email'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Fecha y Hora' in line:
-                        new_payment['timestamp'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Tarjeta' in line:
-                        new_payment['card_number'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Producto Cantidad Precio Subtotal' in line and found:
-                        new_payment['order_detail'] = lines[count + 1][2:].replace('\r', '').replace('\n', '')
-                    elif 'Total del pago' in line:
-                        new_payment['total'] = lines[count][2:].replace('\r', '').replace('\n', '')
-                    count += 1
-                if found:
-                    mail.close()
-                    mail.logout()
-                    return new_payment
-            else:
-                continue
-        if x == i:
-            mail.close()
-            mail.logout()
-            return new_payment
+            if part.get_content_type() == 'text/plain' and FROM_EMAIL in email_from:
+                new_payment = get_payment_value(part.get_payload())
+                if bad_format(new_payment):
+                    error_message = f'Wrong Format on Mail from {email_from}, moved!'
+                    notify(error_message, 'Bad Format Notification')
+                    move_folder_mail_bad_format(mail, latest_email_uid)
+                    break
+                if (not bad_format(new_payment)) and (transaction_number in new_payment['transaction_number']):
+                    msg = f'Payment Succesful for Transaction Number:\n{transaction_number} \n' \
+                          f'Payment Info:\n{str(new_payment)}'
+                    notify(msg, 'Acepted Payment Notification')
+                    return move_folder_mail(mail, latest_email_uid), new_payment, error_message
+        new_payment = {}
+    if not error_message:
+        error_message = f'Payment Not Found for Transaction Number {transaction_number}'
+        notify(error_message, 'Not Found Payment Notification')
+    return mail, new_payment, error_message
+
+
+def get_body_mail(mail, data, x):
+    latest_email_uid = data[0].split()[x]
+    result, email_data = mail.uid('fetch', latest_email_uid, '(RFC822)')
+    raw_email = email_data[0][1]
+    raw_email_string = raw_email.decode('utf-8')
+    return email.message_from_string(raw_email_string), latest_email_uid
+
+
+def bad_format(payment):
+    return all(value == '' for value in payment.values())
+
+
+def notify(msg, subject):
+    send_email(msg, subject)
+    logger.info(msg)
+
+
+def move_folder_mail(mail, mail_uid):
+    mail.uid('COPY', mail_uid, 'Paid')
+    mail.uid('STORE', mail_uid, '+FLAGS', '(\Deleted)')
+    mail.expunge()
+    logger.info(f'Mail from Payment moved to Paid')
+    return mail
+
+
+def move_folder_mail_bad_format(mail, mail_uid):
+    mail.uid('COPY', mail_uid, 'Misc')
+    mail.uid('STORE', mail_uid, '+FLAGS', '(\Deleted)')
+    logger.info(f'Bad Formatted Mail moved to Misc')
+    mail.expunge()
+    return mail
+
+
+def send_email(email_message, subject):
+    server = smtplib.SMTP('email-smtp.us-east-1.amazonaws.com', 587)
+    server.starttls()
+    server.login(SMTP_USERNAME, SMTP_PASSWORD)
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = SES_AUTH_FROM_EMAIL
+    message["To"] = SES_AUTH_FROM_EMAIL
+
+    part1 = MIMEText(email_message, 'plain')
+    message.attach(part1)
+    server.sendmail(SES_AUTH_FROM_EMAIL, SES_AUTH_FROM_EMAIL, message.as_string())
