@@ -1,10 +1,9 @@
 import logging
 import chalicelib.config as config
-from chalicelib.config import SMTP_USERNAME, SMTP_PASSWORD, SES_AUTH_FROM_EMAIL
-import io
+from chalicelib.config import SMTP_USERNAME, SMTP_PASSWORD, SES_AUTH_FROM_EMAIL, TO_ADDR, FROM_EMAIL
+from chalicelib.regex import get_payment_value
 import email.utils
 import imaplib
-import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -29,33 +28,28 @@ def setup_mail(transaction_number):
 
 
 def get_messages(mail, data, transaction_number):
-    error_message = ''
     i = len(data[0].split())
-    new_payment = {}
     for x in range(i):
+        error_message = ''
         email_message, latest_email_uid = get_body_mail(mail, data, x)
         email_from = str(email.header.make_header(email.header.decode_header(email_message['From'])))
         for part in email_message.walk():
-            if part.get_content_type() == 'text/plain':
-                count = 0
-                body = part.get_payload()
-                new_payment = get_payment_value(body)
-                if not correct_format(new_payment):
-                    new_payment = {}
-                    send_mail_notification(transaction_number, email_from)
-                    error_message = f'Wrong Format on Mail from {email_from} Try Again!'
+            if part.get_content_type() == 'text/plain' and FROM_EMAIL in email_from:
+                new_payment = get_payment_value(part.get_payload())
+                if bad_format(new_payment):
+                    error_message = f'Wrong Format on Mail from {email_from}, moved!'
+                    notify(error_message, 'Bad Format Notification')
                     move_folder_mail_bad_format(mail, latest_email_uid)
-                    return mail, new_payment, error_message
-                count += 1
-                if correct_format(new_payment) and (transaction_number in new_payment['transaction_number']) and \
-                        (config.FROM_EMAIL in email_from):
-                    email_ms = f'Payment Succesful for Transaction Number:\n{transaction_number}\n' \
-                               f'Payment Info:\n{str(new_payment, transaction_number)}'
-                    send_email(email_ms)
+                    break
+                if (not bad_format(new_payment)) and (transaction_number in new_payment['transaction_number']):
+                    msg = f'Payment Succesful for Transaction Number:\n{transaction_number} \n' \
+                          f'Payment Info:\n{str(new_payment)}'
+                    notify(msg, 'Acepted Payment Notification')
                     return move_folder_mail(mail, latest_email_uid), new_payment, error_message
-                new_payment = {}
+        new_payment = {}
     if not error_message:
         error_message = f'Payment Not Found for Transaction Number {transaction_number}'
+        notify(error_message, 'Not Found Payment Notification')
     return mail, new_payment, error_message
 
 
@@ -67,45 +61,13 @@ def get_body_mail(mail, data, x):
     return email.message_from_string(raw_email_string), latest_email_uid
 
 
-def get_payment_value(body):
-    payment = {
-        'transaction_number': get_match(r'\*\s*No\.\sTransacci\=C3\=B3n\s*\*[\r\n]+([^\r\n]+)', body),
-        'payment_method': get_match(r'\*\s*Medio\sde\sPago\s*\*[\r\n]+([^\r\n]+)', body),
-        'name': get_match(r'\*\s*Nombre\s*\*[\r\n]+([^\r\n]+)', body),
-        'email': get_match(r'\*\s*Email\s*\*[\r\n]+([^\r\n]+)', body),
-        'timestamp': get_match(r'\*\s*Fecha\sy\sHora\s*\*[\r\n]+([^\r\n]+)', body),
-        'card_number': get_match(r'\*\s*Tarjeta\s*\*[\r\n]+([^\r\n]+)', body),
-        'order_detail': get_match(r'\s*Producto\sCantidad\sPrecio\sSubtotal\s*[\r\n]+([^\r\n]+)', body),
-        'total': get_match(r'\s*Total\sdel\spago\s*', body)
-    }
-    return payment
+def bad_format(payment):
+    return all(value == '' for value in payment.values())
 
 
-def get_match(regex, content):
-    pattern = re.compile(rf'{regex}', re.MULTILINE | re.IGNORECASE)
-    match = pattern.search(content)
-    if match:
-        return str(match.groups())[2:].replace(',', '').replace('(', '').replace(')', '')
-    else:
-        return ''
-
-
-def get_content_line(lines, count):
-    return lines[count + 1][2:].replace('\r', '').replace('\n', '')
-
-
-def correct_format(payment):
-    return all(field in payment for field in payment_fields)
-
-
-def send_mail_notification(transaction_number, email_from):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(config.EMAIL_ADDR, config.PASSWORD)
-    msg = f"Payment with Transaction Number {transaction_number} cannot be Acepted, missing fields on Pagalo Mail {email_from}"
-    server.sendmail(config.EMAIL_ADDR, config.TO_ADDR, msg)
-    server.quit()
-    logger.info(f'Bda')
+def notify(msg, subject):
+    send_email(msg, subject)
+    logger.info(msg)
 
 
 def move_folder_mail(mail, mail_uid):
@@ -124,17 +86,16 @@ def move_folder_mail_bad_format(mail, mail_uid):
     return mail
 
 
-def send_email(email_message, transaction_number):
+def send_email(email_message, subject):
     server = smtplib.SMTP('email-smtp.us-east-1.amazonaws.com', 587)
     server.starttls()
     server.login(SMTP_USERNAME, SMTP_PASSWORD)
 
     message = MIMEMultipart("alternative")
-    message["Subject"] = 'Acepted Payment Notification'
+    message["Subject"] = subject
     message["From"] = SES_AUTH_FROM_EMAIL
     message["To"] = SES_AUTH_FROM_EMAIL
 
     part1 = MIMEText(email_message, 'plain')
     message.attach(part1)
     server.sendmail(SES_AUTH_FROM_EMAIL, SES_AUTH_FROM_EMAIL, message.as_string())
-    logger.info(f'Notification Mail Sent to Admin, Transaction Number: {transaction_number}')
