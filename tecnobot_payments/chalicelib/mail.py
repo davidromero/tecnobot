@@ -1,10 +1,13 @@
 import logging
 import chalicelib.config as config
+from chalicelib.config import SMTP_USERNAME, SMTP_PASSWORD, SES_AUTH_FROM_EMAIL
 import io
 import email.utils
 import imaplib
 import re
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -46,6 +49,9 @@ def get_messages(mail, data, transaction_number):
                 count += 1
                 if correct_format(new_payment) and (transaction_number in new_payment['transaction_number']) and \
                         (config.FROM_EMAIL in email_from):
+                    email_ms = f'Payment Succesful for Transaction Number:\n{transaction_number}\n' \
+                               f'Payment Info:\n{str(new_payment, transaction_number)}'
+                    send_email(email_ms)
                     return move_folder_mail(mail, latest_email_uid), new_payment, error_message
                 new_payment = {}
     if not error_message:
@@ -99,16 +105,36 @@ def send_mail_notification(transaction_number, email_from):
     msg = f"Payment with Transaction Number {transaction_number} cannot be Acepted, missing fields on Pagalo Mail {email_from}"
     server.sendmail(config.EMAIL_ADDR, config.TO_ADDR, msg)
     server.quit()
+    logger.info(f'Bda')
 
 
 def move_folder_mail(mail, mail_uid):
     mail.uid('COPY', mail_uid, 'Paid')
     mail.uid('STORE', mail_uid, '+FLAGS', '(\Deleted)')
     mail.expunge()
+    logger.info(f'Mail from Payment moved to Paid')
     return mail
+
 
 def move_folder_mail_bad_format(mail, mail_uid):
     mail.uid('COPY', mail_uid, 'Misc')
     mail.uid('STORE', mail_uid, '+FLAGS', '(\Deleted)')
+    logger.info(f'Bad Formatted Mail moved to Misc')
     mail.expunge()
     return mail
+
+
+def send_email(email_message, transaction_number):
+    server = smtplib.SMTP('email-smtp.us-east-1.amazonaws.com', 587)
+    server.starttls()
+    server.login(SMTP_USERNAME, SMTP_PASSWORD)
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = 'Acepted Payment Notification'
+    message["From"] = SES_AUTH_FROM_EMAIL
+    message["To"] = SES_AUTH_FROM_EMAIL
+
+    part1 = MIMEText(email_message, 'plain')
+    message.attach(part1)
+    server.sendmail(SES_AUTH_FROM_EMAIL, SES_AUTH_FROM_EMAIL, message.as_string())
+    logger.info(f'Notification Mail Sent to Admin, Transaction Number: {transaction_number}')
