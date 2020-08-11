@@ -13,6 +13,9 @@ class CampaignDB(object):
     def list_items(self):
         pass
 
+    def gte_item(self, uid):
+        pass
+
     def update_item(self, uid, body):
         pass
 
@@ -21,10 +24,20 @@ class DynamoDBCampaigns(CampaignDB):
     def __init__(self, table_resource):
         self._table = table_resource
 
-    def list_eligible_items(self):
-        logger.info('Listing active paid campaigns')
+    def list_eligible_items(self, campaignid):
+        logger.info('Listing active paid campaign')
         response = self._table.scan(FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True))
         return response['Items']
+
+    def get_item(self, uid):
+        logger.info(f'Getting Campaign: {uid}')
+        item = self._table.get_item(Key={'campaingid': uid})['Item']
+        if item is not None:
+            return item
+        else:
+            logger.error(f'Campaign {uid} not found')
+            return 404
+
 
     def delete_campaign(self, uid, username=DEFAULT_USERNAME):
         logger.info(f'Inactivating Campaign: {uid}')
@@ -33,6 +46,7 @@ class DynamoDBCampaigns(CampaignDB):
             now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
             item['modified_by'] = username
             item['modified_timestamp'] = now
+            item['adwords_campaignid'] = ''
             item['active'] = False
             response = self._table.put_item(Item=item)
             return response['ResponseMetadata']
