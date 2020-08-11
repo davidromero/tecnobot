@@ -1,5 +1,12 @@
 from datetime import datetime, timedelta
 import pytz
+from googleads import adwords, common
+
+
+def adwords_client():
+    client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
+    client.cache = common.ZeepServiceProxy.NO_CACHE
+    return client
 
 
 def create_budget(adwords_client):
@@ -103,3 +110,17 @@ def create_add_extended_text(client, ad_group_id, campaign):
     ads = ad_group_ad_service.mutate(operations)
 
     return ads['value'][0]['ad']['id']
+
+
+def remove_campaign(campaign_id):
+    client = adwords_client()
+    campaign_service = client.GetService('CampaignService', version='v201809')
+    operations = [{
+        'operator': 'SET',
+        'operand': {
+            'id': campaign_id,
+            'status': 'REMOVED'
+        }
+    }]
+    result = campaign_service.mutate(operations)
+    return result

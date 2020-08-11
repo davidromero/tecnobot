@@ -8,8 +8,7 @@ logger.setLevel(logging.INFO)
 
 def init_adwords(campaign):
     logging.info(campaign)
-    client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
-    client.cache = common.ZeepServiceProxy.NO_CACHE
+    client = adwords_client()
     logger.info(f"Starting campaign creation")
     logger.info(f"Creating a new budget of ${campaign['budget_amount']}")
     budget_id = create_budget(client)
@@ -20,3 +19,10 @@ def init_adwords(campaign):
     logger.info(f"Add Group Addded with ID: {str(add_group_id)}")
     add_extended_id = create_add_extended_text(client, add_group_id, campaign)
     logger.info(f"Add Extended Created with ID: {str(add_extended_id)}")
+    return campaign_id
+
+
+def adwords_client():
+    client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
+    client.cache = common.ZeepServiceProxy.NO_CACHE
+    return client
