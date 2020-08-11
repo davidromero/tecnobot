@@ -1,7 +1,7 @@
 import logging
 import boto3 as boto3
 from chalice import Chalice
-from chalicelib import adwords_api, custom_responses, database
+from chalicelib import custom_responses, database
 from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
 from chalicelib.adwords_api import init_adwords
 from chalicelib.adwords_actions import remove_campaign

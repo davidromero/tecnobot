@@ -24,7 +24,7 @@ class DynamoDBCampaigns(CampaignDB):
     def __init__(self, table_resource):
         self._table = table_resource
 
-    def list_eligible_items(self, campaignid):
+    def list_eligible_items(self):
         logger.info('Listing active paid campaign')
         response = self._table.scan(FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True))
         return response['Items']
@@ -37,7 +37,6 @@ class DynamoDBCampaigns(CampaignDB):
         else:
             logger.error(f'Campaign {uid} not found')
             return 404
-
 
     def delete_campaign(self, uid, username=DEFAULT_USERNAME):
         logger.info(f'Inactivating Campaign: {uid}')
@@ -63,8 +62,6 @@ class DynamoDBCampaigns(CampaignDB):
             item['modified_timestamp'] = now
             item['adwords_campaignid'] = adwords_campaignid
             response = self._table.put_item(Item=item)
-            print('Item to modified')
-            print(item)
             return response['ResponseMetadata']
         else:
             logger.error(f'Campaign {uid} not found')
