@@ -7,17 +7,17 @@ response_headers = {'Content-Type': 'application/json',
 
 def post_response(new_payment, message):
     if new_payment is not None:
-        return post_success()
+        return post_success(new_payment)
     else:
         return post_fail(message)
 
 
-def post_success():
+def post_success(new_payment):
     return Response(
         status_code=201,
         body={
             'status': 201,
-            'payload': 'Payment Accepted'
+            'payload': new_payment
         },
         headers=response_headers
     )

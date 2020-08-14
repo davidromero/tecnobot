@@ -21,6 +21,9 @@ def index():
 def add_campaign():
     response = {}
     body = app.current_request.json_body
+    # get conversation_item from psid
+    # map fields to campaign_item
+    # save item to tecnobot_campaing_dev
     campaigns_list = get_app_db().list_eligible_items(body['campaign_id'])
     if campaigns_list:
         for campaign in campaigns_list:
