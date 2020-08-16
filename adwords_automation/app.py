@@ -21,16 +21,14 @@ def index():
 def add_campaign():
     response = {}
     body = app.current_request.json_body
-    # get conversation_item from psid
-    # map fields to campaign_item
-    # save item to tecnobot_campaing_dev
-    campaigns_list = get_app_db().list_eligible_items(body['campaign_id'])
+    new_campaign_id = get_app_db().add_item(body)
+    campaigns_list = get_app_db().list_eligible_items()
     if campaigns_list:
         for campaign in campaigns_list:
             adwords_campaign_id = init_adwords(campaign)
             if adwords_campaign_id:
                 logger.info(f'Adding adword_campaignid for campaign {campaign}')
-                response = get_app_db().add_adwords_campaign(body['campaign_id'], adwords_campaign_id['value'][0]['id'])
+                response = get_app_db().add_adwords_campaign(new_campaign_id, adwords_campaign_id['value'][0]['id'])
             else:
                 logger.info('Adwords_campaignid cant be added to campaign')
         if response['HTTPStatusCode'] == 200:

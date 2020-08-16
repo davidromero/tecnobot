@@ -1,7 +1,9 @@
 import datetime
 import logging
 import pytz
+import json
 from boto3.dynamodb.conditions import Attr
+from chalicelib import conversations
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -10,6 +12,9 @@ EMPTY_FIELD = '-'
 
 
 class CampaignDB(object):
+    def add_item(self, item):
+        pass
+
     def list_items(self):
         pass
 
@@ -23,6 +28,19 @@ class CampaignDB(object):
 class DynamoDBCampaigns(CampaignDB):
     def __init__(self, table_resource):
         self._table = table_resource
+
+    def add_item(self, conversation):
+        logger.info('Adding new Campaign')
+        new_campaign = conversations.process_conversation(conversation, username=DEFAULT_USERNAME)
+        #        if validate_campaign_fields(new_campaign):
+        logger.info(f'Inserting conversation: {json.dumps(new_campaign)}')
+        self._table.put_item(
+            Item=new_campaign
+        )
+        return new_campaign['campaingid']
+#        else:
+#            logger.info("Campaign creation is not valid")
+#            return None
 
     def list_eligible_items(self):
         logger.info('Listing active paid campaign')
