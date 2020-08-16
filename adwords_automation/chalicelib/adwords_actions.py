@@ -9,8 +9,8 @@ def adwords_client():
     return client
 
 
-def create_budget(adwords_client):
-    budget_service = adwords_client.GetService('BudgetService', version='v201809')
+def create_budget(client):
+    budget_service = client.GetService('BudgetService', version='v201809')
     budget = {
         'amount': {
             'microAmount': '5000000'
@@ -26,8 +26,8 @@ def create_budget(adwords_client):
     return budget_service.mutate(budget_operations)['value'][0]['budgetId']
 
 
-def create_campaign(adwords_client, budget_id, campaign_name):
-    campaign_service = adwords_client.GetService('CampaignService', version='v201809')
+def create_campaign(client, budget_id, campaign_name):
+    campaign_service = client.GetService('CampaignService', version='v201809')
     operations = [{
         'operator': 'ADD',
         'operand': {

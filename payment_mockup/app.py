@@ -15,9 +15,7 @@ _DB = None
 def middleware():
     global _DB
     body = app.current_request.json_body
-    conversation_data = get_app_db('conversation').get_item(body['psid'])
-    _DB = None
-    new_campaign = conversations.process_conversation(conversation_data)
+    new_campaign = conversations.process_conversation(body)
     print(str(new_campaign))
     campaign = get_app_db('campaign').add_item(new_campaign)
     _DB = None
