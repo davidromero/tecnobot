@@ -38,7 +38,7 @@ JSON for POST /adwords
 }
 ```
 
-JSON for DELTE /adwords
+JSON for DELETE /adwords
 ```json
 {
 	"campaign_id": "3857fb28-3055"
