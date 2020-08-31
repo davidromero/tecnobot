@@ -1,16 +1,19 @@
 ![CI](https://github.com/davidromero/tecnobot/workflows/CI/badge.svg)
-# tecnobot
+# Tecnobot
 
-Serverless services for Chat-Bot
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="372" height="338">
 
-# Adwords Automation
+Services to create adds on Google-Adwords and process payments through Gmail.
 
-## Add Campaign
+
+## Adwords Automation
+
+### Add Campaign
 - Create campaign from conversation Info
 - Get campaign_id from campaign
 - Create campaign, budget, add_group and add in adwords
 
-## Delete Campaign
+### Delete Campaign
 - Get Item from DynamoDB by campaign_id 
 - Remove campaign by adwords_campaignid
 - Deactivate campaign, active = false
@@ -46,7 +49,7 @@ JSON for DELTE /adwords
 ```
 
 
-# TecnoBots Payments
+## TecnoBots Payments
 
 | Method | URI Path        | Description                                              |
 |--------|-----------------|----------------------------------------------------------|
