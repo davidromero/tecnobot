@@ -1,19 +1,39 @@
 ![CI](https://github.com/davidromero/tecnobot/workflows/CI/badge.svg)
-# tecnobot
+# Tecnobot
 
-Serverless services for Chat-Bot
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="558" height="507">
 
-# Adwords Automation
 
-## Add Campaign
-- Create campaign from conversation Info
-- Get campaign_id from campaign
-- Create campaign, budget, add_group and add in adwords
+## Contents
 
-## Delete Campaign
-- Get Item from DynamoDB by campaign_id 
-- Remove campaign by adwords_campaignid
-- Deactivate campaign, active = false
+- [Overview](#overview)
+- [State and Scope](#state)
+- [Services](#services)
+- [Diagrams](#diagrams)
+- [Requirements](#requirements)
+
+
+## <a name="overview"></a>Overview
+Web Services to create adds on Google-Adwords and process payments through Gmail.
+
+## <a name="state"></a>State
+
+**DEVELOPMENT** 
+
+**Scope**
+- Create and publish google ads programmatically from chatbot
+- Process payments through notification email from third-party payment system.
+
+**Missing**
+- IaC, specified the needed infrastructure on cloud formation
+- Create continuos deployment pipeline  
+- Integration Testing
+- Integrate third-party API, (no available at this time)
+
+
+## <a name="services"></a>Services
+
+### adwords_automation
 
 | Method | URI Path        | Description                                                                        |
 |--------|-----------------|------------------------------------------------------------------------------------|
@@ -46,7 +66,7 @@ JSON for DELETE /adwords
 ```
 
 
-# TecnoBots Payments
+### TecnoBots Payments
 
 | Method | URI Path        | Description                                              |
 |--------|-----------------|----------------------------------------------------------|
@@ -59,3 +79,35 @@ JSON for POST /payments
   "transaction_number": "5954639929616444404274"
 }
 ```
+
+## <a name="diagrams"></a>Diagrams
+
+### Sequence Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/sequence_diagram.png?raw=true" width="637" height="354">
+
+### ChaBot Overview Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/Overview_diagram.png?raw=true" width="364" height="210">
+
+### DB Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/DB_diagram.png?raw=true" width="160" height="203">
+
+### Conversations on Chatbot Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/ConversationOnChatbot_diagram.png?raw=true" width="115" height="492">
+
+### Payments on ChatBot Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/PaymentOnChatBot_diagram.png?raw=true" width="181" height="585">
+
+### Process Payment Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/ProcessPayment_diagram.png?raw=true" width="120" height="491">
+
+### Add Creation Diagram
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/AddCreation_diagram.png?raw=true" width="62" height="345">
+
+## <a name="requirements"></a>Requirements
+
+- Python >= 3.6
+- pip >= 20.0.2
+- virtualenv >= 20.0.27
+- AWS CLI >= 1.18.69
+- chalice >= 1.15.1
+
