@@ -1,15 +1,15 @@
 ![CI](https://github.com/davidromero/tecnobot/workflows/CI/badge.svg)
 # Tecnobot
 
-<img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="372" height="338">
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="558" height="507">
 
 
 ## Contents
 
 - [Overview](#overview)
-- [Statei and Scope](#state)
+- [State and Scope](#state)
 - [Services](#services)
-- Diagrams
+- [Diagrams](#diagrams)
 - [Requirements](#requirements)
 
 
@@ -58,7 +58,7 @@ JSON for POST /adwords
 }
 ```
 
-JSON for DELTE /adwords
+JSON for DELETE /adwords
 ```json
 {
 	"campaign_id": "3857fb28-3055"
@@ -66,7 +66,7 @@ JSON for DELTE /adwords
 ```
 
 
-## TecnoBots Payments
+### TecnoBots Payments
 
 | Method | URI Path        | Description                                              |
 |--------|-----------------|----------------------------------------------------------|
@@ -79,6 +79,11 @@ JSON for POST /payments
   "transaction_number": "5954639929616444404274"
 }
 ```
+
+## <a name="diagrams"></a>Diagrams
+
+
+
 ## <a name="requirements"></a>Requirements
 
 - Python >= 3.6
