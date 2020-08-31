@@ -3,20 +3,23 @@
 
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="372" height="338">
 
+
+## Contents
+
+- [Overview](#overview)
+- State and Scope
+- [Services](#services)
+- Diagrams
+- Requirements
+
+
+## <a name="overview"></a>Overview
 Services to create adds on Google-Adwords and process payments through Gmail.
 
 
-## Adwords Automation
+## <a name="services"></a>Services
 
-### Add Campaign
-- Create campaign from conversation Info
-- Get campaign_id from campaign
-- Create campaign, budget, add_group and add in adwords
-
-### Delete Campaign
-- Get Item from DynamoDB by campaign_id 
-- Remove campaign by adwords_campaignid
-- Deactivate campaign, active = false
+### adwords_automation
 
 | Method | URI Path        | Description                                                                        |
 |--------|-----------------|------------------------------------------------------------------------------------|
