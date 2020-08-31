@@ -7,14 +7,28 @@
 ## Contents
 
 - [Overview](#overview)
-- State and Scope
+- [Statei and Scope](#state)
 - [Services](#services)
 - Diagrams
-- Requirements
+- [Requirements](#requirements)
 
 
 ## <a name="overview"></a>Overview
-Services to create adds on Google-Adwords and process payments through Gmail.
+Web Services to create adds on Google-Adwords and process payments through Gmail.
+
+## <a name="state"></a>State
+
+**DEVELOPMENT** 
+
+**Scope**
+- Create and publish google ads programmatically from chatbot
+- Process payments through notification email from third-party payment system.
+
+**Missing**
+- IaC, specified the needed infrastructure on cloud formation
+- Create continuos deployment pipeline  
+- Integration Testing
+- Integrate third-party API, (no available at this time)
 
 
 ## <a name="services"></a>Services
@@ -65,3 +79,11 @@ JSON for POST /payments
   "transaction_number": "5954639929616444404274"
 }
 ```
+## <a name="requirements"></a>Requirements
+
+- Python >= 3.6
+- pip >= 20.0.2
+- virtualenv >= 20.0.27
+- AWS CLI >= 1.18.69
+- chalice >= 1.15.1
+
