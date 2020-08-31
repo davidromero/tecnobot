@@ -82,25 +82,25 @@ JSON for POST /payments
 
 ## <a name="diagrams"></a>Diagrams
 
-## Sequence Diagram
+### Sequence Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/sequence_diagram.png?raw=true" width="637" height="354">
 
-## ChaBot Overview Diagram
+### ChaBot Overview Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/Overview_diagram.png?raw=true" width="364" height="210">
 
-## DB Diagram
+### DB Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/DB_diagram.png?raw=true" width="160" height="203">
 
-## Conversations on Chatbot Diagram
+### Conversations on Chatbot Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/ConversationOnChatbot_diagram.png?raw=true" width="115" height="492">
 
-## Payments on ChatBot Diagram
+### Payments on ChatBot Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/PaymentOnChatbot_diagram.png?raw=true" width="181" height="585">
 
-## Process Payment Diagram
+### Process Payment Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/ProcessPayment_diagram.png?raw=true" width="120" height="491">
 
-## Add Creation Diagram
+### Add Creation Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/AddCreation_diagram.png?raw=true" width="62" height="345">
 
 ## <a name="requirements"></a>Requirements
