@@ -95,7 +95,7 @@ JSON for POST /payments
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/ConversationOnChatbot_diagram.png?raw=true" width="115" height="492">
 
 ### Payments on ChatBot Diagram
-<img src="https://github.com/davidromero/tecnobot/blob/master/docs/PaymentOnChatbot_diagram.png?raw=true" width="181" height="585">
+<img src="https://github.com/davidromero/tecnobot/blob/master/docs/PaymentOnChatBot_diagram.png?raw=true" width="181" height="585">
 
 ### Process Payment Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/ProcessPayment_diagram.png?raw=true" width="120" height="491">
