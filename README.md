@@ -30,6 +30,12 @@ Web Services to create adds on Google-Adwords and process payments through Gmail
 - Integration Testing
 - Integrate third-party API, (no available at this time)
 
+**TODO**
+- Save Keywords as a List on tecnobot_conversations
+- Validate (website on CAP and number has a "-" or " ") fields format before processing them on campaigns
+- DELETE process Diagram
+- JWS authentication on Chalice
+
 
 ## <a name="services"></a>Services
 
