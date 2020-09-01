@@ -16,7 +16,7 @@ def init_adwords(campaign):
     campaign_id = create_campaign(client, budget_id, campaign['business_name'])
     logger.info(f"Campaign published with campaign ID: {str(campaign_id['value'][0]['id'])}")
     add_group_id = create_add_group(client, campaign_id['value'][0]['id'], campaign)
-    logger.info(f"Add Group Addded with ID: {str(add_group_id)}")
+    logger.info(f"Add Group Added with ID: {str(add_group_id)}")
     add_extended_id = create_add_extended_text(client, add_group_id, campaign)
     logger.info(f"Add Extended Created with ID: {str(add_extended_id)}")
     return campaign_id
