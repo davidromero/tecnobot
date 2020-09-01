@@ -23,12 +23,12 @@ Web Services to create adds on Google-Adwords and process payments through Gmail
 **Scope**
 - Create and publish google ads programmatically from chatbot
 - Process payments through notification email from third-party payment system.
+- Integration Testing
+- Create continuos deployment pipeline  
 
 **Missing**
 - IaC, specified the needed infrastructure on cloud formation
-- Create continuos deployment pipeline  
-- Integration Testing
-- Integrate third-party API, (no available at this time)
+- Integrate payment services besides Pagalo.
 
 **TODO**
 - Save Keywords as a List on tecnobot_conversations
