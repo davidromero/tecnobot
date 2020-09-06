@@ -10,8 +10,8 @@ def init_adwords(campaign):
     logging.info(campaign)
     client = adwords_client()
     logger.info(f"Starting campaign creation")
-    logger.info(f"Creating a new budget of ${campaign['budget_amount']}")
-    budget_id = create_budget(client, campaign['budget_amount'])
+    logger.info(f"Creating a new budget of ${str(campaign['budget_amount']) + '000000'}")
+    budget_id = create_budget(client, str(campaign['budget_amount']) + '000000')
     logger.info(f"Creating a new campaign for {campaign['business_name']}")
     campaign_id = create_campaign(client, budget_id, campaign['business_name'])
     logger.info(f"Campaign published with campaign ID: {str(campaign_id['value'][0]['id'])}")
@@ -26,3 +26,7 @@ def adwords_client():
     client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
     client.cache = common.ZeepServiceProxy.NO_CACHE
     return client
+
+
+def add_zeros_to_budget():
+    return None

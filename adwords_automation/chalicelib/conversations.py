@@ -3,9 +3,9 @@ import pytz
 from uuid import uuid4
 
 MARKETING_PACKAGES = {
-    'MARKETING_COMBO_1': '2000000',
-    'MARKETING_COMBO_2': '3000000',
-    'MARKETING_COMBO_3': '4000000'
+    'MARKETING_COMBO_1': '5',
+    'MARKETING_COMBO_2': '10',
+    'MARKETING_COMBO_3': '15'
 }
 
 

@@ -9,12 +9,12 @@ def adwords_client():
     return client
 
 
-def create_budget(client, budget):
+def create_budget(client, budget_amout):
     budget_service = client.GetService('BudgetService', version='v201809')
     # amount microAmount {One million is equivalent to one unit}
     budget = {
         'amount': {
-            'microAmount': budget
+            'microAmount': budget_amout
         },
         'deliveryMethod': 'STANDARD',
         'isExplicitlyShared': False,
