@@ -12,12 +12,12 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET'], api_key_required=True)
 def index():
     return custom_responses.get_base_res()
 
 
-@app.route('/adwords', methods=['POST'])
+@app.route('/adwords', methods=['POST'], api_key_required=True)
 def add_campaign():
     response = {}
     body = app.current_request.json_body

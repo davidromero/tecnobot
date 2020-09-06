@@ -12,12 +12,12 @@ app.log.setLevel(logging.DEBUG)
 _DB = None
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET'], api_key_required=True)
 def index():
     return custom_responses.get_base_res()
 
 
-@app.route('/payment', methods=['POST'], cors=cors_config)
+@app.route('/payment', methods=['POST'], cors=cors_config, api_key_required=True)
 def payment():
     body = app.current_request.json_body
     new_payment, error_message = setup_mail(str(body["transaction_number"]))

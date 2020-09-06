@@ -11,7 +11,7 @@ def init_adwords(campaign):
     client = adwords_client()
     logger.info(f"Starting campaign creation")
     logger.info(f"Creating a new budget of ${campaign['budget_amount']}")
-    budget_id = create_budget(client)
+    budget_id = create_budget(client, campaign['budget_amount'])
     logger.info(f"Creating a new campaign for {campaign['business_name']}")
     campaign_id = create_campaign(client, budget_id, campaign['business_name'])
     logger.info(f"Campaign published with campaign ID: {str(campaign_id['value'][0]['id'])}")
