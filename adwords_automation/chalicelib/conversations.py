@@ -22,8 +22,8 @@ def process_conversation(conversation, username):
         'budget_amount': get_budget_amount(conversation['marketing_package']),
         'budget_currency': 'USD',
         'slogan': conversation['slogan'],
-        'phone': conversation['phone'],
-        'website': conversation['website'],
+        'phone': format_phone_number(conversation['phone']),
+        'website': format_website(conversation['website']),
         'location': conversation['location'],
         'history': conversation['history'],
         'search_terms': conversation['search_terms'],
@@ -35,3 +35,11 @@ def process_conversation(conversation, username):
 
 def get_budget_amount(package_type):
     return MARKETING_PACKAGES[package_type]
+
+
+def format_phone_number(phone_number):
+    return phone_number.replace(" ", "").replace("-", "")
+
+
+def format_website(website):
+    return website.lower()
