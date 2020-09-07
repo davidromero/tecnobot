@@ -37,17 +37,16 @@ class DynamoDBCampaigns(CampaignDB):
         self._table.put_item(
             Item=new_campaign
         )
-        return new_campaign['campaingid']
+        return new_campaign
 
     #        else:
     #            logger.info("Campaign creation is not valid")
     #            return None
 
-    def list_eligible_items(self, new_campaign):
+    def list_eligible_items(self, psid):
         logger.info('Listing active paid campaign')
         response = self._table.scan(
-            FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True) & Attr('campaingid').eq(
-                new_campaign))
+            FilterExpression=Attr('psid').eq(psid))
         logger.info(response['Items'])
         return response['Items']
 

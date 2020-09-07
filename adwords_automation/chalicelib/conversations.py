@@ -14,8 +14,7 @@ def process_conversation(conversation, username):
     now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
     new_campaign = {
         'campaingid': uid,
-        'active': True,
-        'payment_status': True,
+        'psid': conversation['psid'],
         'created_timestamp': now,
         'modified_timestamp': now,
         'modified_by': username,

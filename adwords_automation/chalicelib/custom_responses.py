@@ -58,9 +58,9 @@ def get_campaigns(campaign_list, message):
 
 def not_found(message):
     return Response(
-        status_code=404,
+        status_code=400,
         body={
-            'status': 404,
+            'status': 400,
             'payload': message
         },
         headers=response_headers

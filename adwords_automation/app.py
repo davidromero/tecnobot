@@ -1,10 +1,10 @@
 import logging
 import boto3 as boto3
 from chalice import Chalice
-from chalicelib import custom_responses, database
-from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
 from chalicelib.adwords_api import init_adwords
+from chalicelib import custom_responses, database
 from chalicelib.adwords_actions import remove_campaign
+from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
 
 app = Chalice(app_name='adwords_automation')
 _DB = None
@@ -21,25 +21,26 @@ def index():
 def add_campaign():
     response = {}
     body = app.current_request.json_body
-    new_campaign_id = get_app_db().add_item(body)
-    campaigns_list = get_app_db().list_eligible_items(new_campaign_id)
-    if campaigns_list:
-        for campaign in campaigns_list:
-            adwords_campaign_id = init_adwords(campaign)
-            if adwords_campaign_id:
-                logger.info(f'Adding adword_campaignid for campaign {campaign}')
-                response = get_app_db().add_adwords_campaign(new_campaign_id, adwords_campaign_id['value'][0]['id'])
-            else:
-                logger.info('Adwords_campaignid cant be added to campaign')
+    campaign = get_app_db().list_eligible_items(body['psid'])
+    if not campaign:
+        new_campaign = get_app_db().add_item(body)
+        adwords_campaign_id = init_adwords(new_campaign)
+        if adwords_campaign_id:
+            logger.info(f'Adding adword_campaignid for campaign {campaign}')
+            response = get_app_db().add_adwords_campaign(new_campaign['campaingid'],
+                                                         adwords_campaign_id['value'][0]['id'])
+        else:
+            logger.info('Adwords_campaignid cant be added to campaign')
         if response['HTTPStatusCode'] == 200:
             logger.info('Adwords_campaignid added')
-            return custom_responses.get_campaigns(campaigns_list, '')
+            message = 'Campaign successfully created'
+            return custom_responses.get_campaigns(campaign, message)
         else:
             message = 'Adwords_campaignid cannot be added'
             logger.info(message)
             return custom_responses.get_campaigns(None, message)
     else:
-        message = 'Cannot get Campaing to add, check DB for Campaign[active] status'
+        message = 'Campaign already processed'
         logger.info(message)
         return custom_responses.get_campaigns(None, message)
 
