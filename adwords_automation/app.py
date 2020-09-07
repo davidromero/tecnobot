@@ -22,7 +22,7 @@ def add_campaign():
     response = {}
     body = app.current_request.json_body
     new_campaign_id = get_app_db().add_item(body)
-    campaigns_list = get_app_db().list_eligible_items()
+    campaigns_list = get_app_db().list_eligible_items(new_campaign_id)
     if campaigns_list:
         for campaign in campaigns_list:
             adwords_campaign_id = init_adwords(campaign)

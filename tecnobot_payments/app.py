@@ -20,13 +20,18 @@ def index():
 @app.route('/payment', methods=['POST'], cors=cors_config, api_key_required=True)
 def payment():
     body = app.current_request.json_body
-    new_payment, error_message = setup_mail(str(body["transaction_number"]))
-    if new_payment:
-        response = get_app_db().add_item(payment=new_payment)
-        return custom_responses.post_response(new_payment, error_message)
+    val_payment = get_app_db().validate_payment(body["transaction_number"])
+    if not val_payment:
+        new_payment, error_message = setup_mail(str(body["transaction_number"]))
+        if new_payment:
+            response = get_app_db().add_item(payment=new_payment)
+            return custom_responses.post_response(response, error_message)
+        else:
+            logger.info('Payment could not be saved')
+            return custom_responses.post_response(None, error_message)
     else:
-        #mapping code error
-        logger.info('Payment could not be saved')
+        logger.info(f'Payment {body["transaction_number"]} already processed')
+        error_message = 'Payment already processed'
         return custom_responses.post_response(None, error_message)
 
 

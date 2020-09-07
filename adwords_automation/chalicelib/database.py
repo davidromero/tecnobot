@@ -15,7 +15,7 @@ class CampaignDB(object):
     def add_item(self, item):
         pass
 
-    def list_items(self):
+    def list_items(self, new_campaign):
         pass
 
     def gte_item(self, uid):
@@ -38,13 +38,17 @@ class DynamoDBCampaigns(CampaignDB):
             Item=new_campaign
         )
         return new_campaign['campaingid']
-#        else:
-#            logger.info("Campaign creation is not valid")
-#            return None
 
-    def list_eligible_items(self):
+    #        else:
+    #            logger.info("Campaign creation is not valid")
+    #            return None
+
+    def list_eligible_items(self, new_campaign):
         logger.info('Listing active paid campaign')
-        response = self._table.scan(FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True))
+        response = self._table.scan(
+            FilterExpression=Attr('active').eq(True) & Attr('payment_status').eq(True) & Attr('campaingid').eq(
+                new_campaign))
+        logger.info(response['Items'])
         return response['Items']
 
     def get_item(self, uid):
