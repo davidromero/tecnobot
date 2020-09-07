@@ -3,9 +3,9 @@ import pytz
 from uuid import uuid4
 
 MARKETING_PACKAGES = {
-    'MARKETING_COMBO_1': '5',
-    'MARKETING_COMBO_2': '10',
-    'MARKETING_COMBO_3': '15'
+    'MARKETING_COMBO_1': '2',
+    'MARKETING_COMBO_2': '3',
+    'MARKETING_COMBO_3': '4'
 }
 
 
@@ -15,7 +15,7 @@ def process_conversation(conversation, username):
     new_campaign = {
         'campaingid': uid,
         'active': True,
-        'payment_status': False,
+        'payment_status': True,
         'created_timestamp': now,
         'modified_timestamp': now,
         'modified_by': username,

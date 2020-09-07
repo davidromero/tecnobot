@@ -99,7 +99,7 @@ def create_add_extended_text(client, ad_group_id, campaign):
                     'headlinePart1': campaign['business_name'],
                     'headlinePart2': campaign['description'][:30],
                     'headlinePart3': campaign['slogan'][:30],
-                    'description': campaign['history'][:30],
+                    'description': campaign['history'][:90],
                     'description2': '',
                     'finalUrls': 'https://' + campaign['website'],
                 },
