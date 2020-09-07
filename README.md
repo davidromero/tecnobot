@@ -36,6 +36,13 @@ Web Services to create adds on Google-Adwords and process payments through Gmail
 - DELETE process Diagram
 - JWS authentication on Chalice
 
+**Character Limits of Google Ads**
+
+- Business Name - 30
+- Description - 30
+- Slogan - 30
+- History - 90
+
 
 ## <a name="services"></a>Services
 
