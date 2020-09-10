@@ -21,10 +21,11 @@ def index():
 def add_campaign():
     response = {}
     body = app.current_request.json_body
+    logger.info(f'Body recieved {body}')
     campaign = get_app_db().list_eligible_items(body['psid'])
     if not campaign:
         new_campaign = get_app_db().add_item(body)
-        adwords_campaign_id = init_adwords(new_campaign)
+        adwords_campaign_id = init_adwords(new_campaign, body['search_terms'])
         if adwords_campaign_id:
             logger.info(f'Adding adword_campaignid for campaign {campaign}')
             response = get_app_db().add_adwords_campaign(new_campaign['campaingid'],

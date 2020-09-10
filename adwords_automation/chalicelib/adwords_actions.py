@@ -113,6 +113,38 @@ def create_add_extended_text(client, ad_group_id, campaign):
     return ads['value'][0]['ad']['id']
 
 
+def add_keywords_to_add_group(client, ad_group_id, keyword_list):
+    # Initialize appropriate service.
+    ad_group_criterion_service = client.GetService(
+        'AdGroupCriterionService', version='v201809')
+
+    operations = construct_operations_keywords(ad_group_id, keyword_list)
+    ad_group_criteria = ad_group_criterion_service.mutate(
+        operations)['value']
+    return ad_group_criteria
+
+
+def construct_operations_keywords(ad_group_id, keyword_list):
+    # Construct keyword ad group criterion object.
+    operations = []
+    for keyword in keyword_list:
+        keyword_operand = {
+            'xsi_type': 'BiddableAdGroupCriterion',
+            'adGroupId': ad_group_id,
+            'criterion': {
+                'xsi_type': 'Keyword',
+                'matchType': 'BROAD',
+                'text': keyword
+            }
+        }
+        operation = {
+            'operator': 'ADD',
+            'operand': keyword_operand
+        }
+        operations.append(operation)
+    return operations
+
+
 def remove_campaign(campaign_id):
     client = adwords_client()
     campaign_service = client.GetService('CampaignService', version='v201809')
