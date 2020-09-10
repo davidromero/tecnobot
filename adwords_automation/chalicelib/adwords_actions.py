@@ -61,7 +61,7 @@ def create_add_group(client, campaign_id, campaign):
                     {
                         'xsi_type': 'CpcBid',
                         'bid': {
-                            'microAmount': '5000000'
+                            'microAmount': '1000000'
                         },
                     }
                 ]
@@ -81,8 +81,36 @@ def create_add_group(client, campaign_id, campaign):
         }
     }]
     ad_groups = ad_group_service.mutate(operations)
-
     return ad_groups['value'][0]['id']
+
+
+def add_campaign_targeting_criteria(client, campaign_id):
+    campaign_criterion_service = client.GetService(
+        'CampaignCriterionService', version='v201809')
+
+    guatemala = {
+        'xsi_type': 'Location',
+        'id': '2320'
+    }
+
+    spanish = {
+        'xsi_type': 'Language',
+        'id': '1003'
+    }
+
+    criteria = [guatemala, spanish]
+
+    operations = []
+    for criterion in criteria:
+        operations.append({
+            'operator': 'ADD',
+            'operand': {
+                'campaignId': campaign_id,
+                'criterion': criterion
+            }
+        })
+    targeting_criteria = campaign_criterion_service.mutate(operations)
+    return targeting_criteria
 
 
 def create_add_extended_text(client, ad_group_id, campaign):
@@ -109,7 +137,6 @@ def create_add_extended_text(client, ad_group_id, campaign):
         }
     ]
     ads = ad_group_ad_service.mutate(operations)
-
     return ads['value'][0]['ad']['id']
 
 
