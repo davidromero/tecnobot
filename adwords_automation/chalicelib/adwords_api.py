@@ -29,7 +29,7 @@ def keywords_to_list(keywords):
     keywords_list = []
     words = keywords.split(',')
     for word in words:
-        keywords_list.append(word.replace(' ', ''))
+        keywords_list.append(word)
     return keywords_list
 
 
@@ -37,7 +37,3 @@ def adwords_client():
     client = adwords.AdWordsClient.LoadFromStorage('chalicelib/credentials/googleads.yaml')
     client.cache = common.ZeepServiceProxy.NO_CACHE
     return client
-
-
-def add_zeros_to_budget():
-    return None
