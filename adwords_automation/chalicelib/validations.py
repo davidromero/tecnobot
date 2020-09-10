@@ -12,11 +12,14 @@ body_fields = ['business_name', 'description', 'history', 'location', 'marketing
 
 
 def validate_body(body):
-    valid = validate_fields(body)
-    valid = valid and validate_website(body['website'])
-    valid = valid and validate_location(body['location'])
-    valid = valid and validate_marketing_package(body['marketing_package'])
-    return valid
+    if validate_fields(body):
+        valid = True
+        valid = valid and validate_website(body['website'])
+        valid = valid and validate_location(body['location'])
+        valid = valid and validate_marketing_package(body['marketing_package'])
+        return valid
+    else:
+        return False
 
 
 def validate_fields(body):
@@ -25,7 +28,7 @@ def validate_fields(body):
             logger.error('Mandatory field missing: ' + body_key)
             return False
         mandatory_value = body[body_key].strip()
-        if mandatory_value == None:
+        if mandatory_value is None:
             logger.error('Mandatory field is blank: ' + body_key)
             return False
     return True
