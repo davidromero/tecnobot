@@ -15,21 +15,32 @@ def validate_body(body):
     if validate_fields(body):
         valid = True
         valid = valid and validate_word_medsize(body['business_name'])
+        log_format_error(valid, 'Error bad format on business_name: ' + body['business_name'])
         valid = valid and validate_word_medsize(body['description'])
+        log_format_error(valid, 'Error bad format on description: ' + body['description'])
         valid = valid and validate_word_medsize(body['slogan'])
+        log_format_error(valid, 'Error bad format on slogan: ' + body['slogan'])
         valid = valid and validate_phone_number(body['phone'])
+        log_format_error(valid, 'Error bad format on phone: ' + body['phone'])
         valid = valid and validate_history(body['history'])
+        log_format_error(valid, 'Error bad format on history: ' + body['history'])
         valid = valid and validate_website(body['website'])
+        log_format_error(valid, 'Error bad format on website: ' + body['website'])
         valid = valid and validate_location(body['location'])
+        log_format_error(valid, 'Error bad format on location: ' + body['location'])
         valid = valid and validate_marketing_package(body['marketing_package'])
+        log_format_error(valid, 'Error bad format on marketing_package: ' + body['marketing_package'])
         return valid
     else:
         return False
 
 
+def log_format_error(valid, message):
+    if not valid:
+        logger.error(message)
+
+
 def validate_word_medsize(word):
-    if not (word and 30 > len(word) > 2):
-        logger.error('Error on word validation, size needed between 2 adn 30: ' + word)
     return word and 30 > len(word) > 2
 
 
