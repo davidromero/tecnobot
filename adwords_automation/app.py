@@ -65,7 +65,7 @@ def delete_campaign():
         response = get_app_db().delete_campaign(body['campaign_id'])
         if response['HTTPStatusCode'] == 200:
             logger.info(f'Campaing was Deleted')
-            return custom_responses.post_response(adwords_response['value'][0]['status'], '')
+            return custom_responses.post_response(adwords_response['value'][0]['status'], 'Campaing was Deleted')
         else:
             error_message = 'Campaign Could not be deleted'
             logger.info(error_message)
