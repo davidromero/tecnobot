@@ -28,6 +28,8 @@ def validate_body(body):
 
 
 def validate_word_medsize(word):
+    if not (word and 30 > len(word) > 2):
+        logger.error('Error on word validation, size needed between 2 adn 30: ' + word)
     return word and 30 > len(word) > 2
 
 

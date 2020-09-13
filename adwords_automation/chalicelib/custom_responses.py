@@ -48,7 +48,7 @@ def get_campaigns(campaign_list, message):
             status_code=201,
             body={
                 'status': 201,
-                'payload': campaign_list
+                'payload': message
             },
             headers=response_headers
         )

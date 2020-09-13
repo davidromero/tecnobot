@@ -46,7 +46,7 @@ class DynamoDBCampaigns(CampaignDB):
     def list_eligible_items(self, psid):
         logger.info('Listing active paid campaign')
         response = self._table.scan(
-            FilterExpression=Attr('psid').eq(psid))
+            FilterExpression=Attr('psid').eq(psid) and Attr('active').eq(True))
         logger.info(response['Items'])
         return response['Items']
 
@@ -66,7 +66,6 @@ class DynamoDBCampaigns(CampaignDB):
             now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
             item['modified_by'] = username
             item['modified_timestamp'] = now
-            item['adwords_campaignid'] = ''
             item['active'] = False
             response = self._table.put_item(Item=item)
             return response['ResponseMetadata']

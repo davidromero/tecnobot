@@ -5,6 +5,7 @@ from chalicelib.adwords_api import init_adwords
 from chalicelib import custom_responses, database
 from chalicelib.adwords_actions import remove_campaign
 from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
+from chalicelib.validations import validate_body
 
 app = Chalice(app_name='adwords_automation')
 _DB = None
@@ -22,6 +23,9 @@ def add_campaign():
     response = {}
     body = app.current_request.json_body
     logger.info(f'Body recieved {body}')
+    if not validate_body(body):
+        message = 'Error on Body validation'
+        return custom_responses.get_campaigns(None, message)
     campaign = get_app_db().list_eligible_items(body['psid'])
     if not campaign:
         new_campaign = get_app_db().add_item(body)

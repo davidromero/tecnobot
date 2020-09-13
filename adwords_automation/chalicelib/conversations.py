@@ -15,6 +15,7 @@ def process_conversation(conversation, username):
     new_campaign = {
         'campaingid': uid,
         'psid': conversation['psid'],
+        'active': True,
         'created_timestamp': now,
         'modified_timestamp': now,
         'modified_by': username,
