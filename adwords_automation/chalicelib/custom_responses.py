@@ -15,17 +15,17 @@ def get_base_res():
 
 def post_response(new_payment, message):
     if new_payment is not None:
-        return post_success()
+        return post_success(message)
     else:
         return post_fail(message)
 
 
-def post_success():
+def post_success(message):
     return Response(
         status_code=201,
         body={
             'status': 201,
-            'payload': 'Payment Deleted'
+            'payload': message
         },
         headers=response_headers
     )
