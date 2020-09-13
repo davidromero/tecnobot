@@ -1,14 +1,13 @@
 import datetime
-import logging
-import pytz
 import json
+import logging
+
+import pytz
 from boto3.dynamodb.conditions import Attr
 from chalicelib import conversations
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-DEFAULT_USERNAME = 'local'
-EMPTY_FIELD = '-'
 
 
 class CampaignDB(object):
@@ -18,7 +17,7 @@ class CampaignDB(object):
     def list_items(self, new_campaign):
         pass
 
-    def gte_item(self, uid):
+    def get_item(self, uid):
         pass
 
     def update_item(self, uid, body):
@@ -31,7 +30,7 @@ class DynamoDBCampaigns(CampaignDB):
 
     def add_item(self, conversation):
         logger.info('Adding new Campaign')
-        new_campaign = conversations.process_conversation(conversation, username=DEFAULT_USERNAME)
+        new_campaign = conversations.process_conversation(conversation)
         #        if validate_campaign_fields(new_campaign):
         logger.info(f'Inserting conversation: {json.dumps(new_campaign)}')
         self._table.put_item(
@@ -39,14 +38,15 @@ class DynamoDBCampaigns(CampaignDB):
         )
         return new_campaign
 
-    #        else:
-    #            logger.info("Campaign creation is not valid")
-    #            return None
+    def scan_all_items(self):
+        logger.info('Listing all items')
+        response = self._table.scan()
+        logger.info(response['Items'])
+        return response['Items']
 
     def list_eligible_items(self, psid):
         logger.info('Listing active paid campaign')
-        response = self._table.scan(
-            FilterExpression=Attr('psid').eq(psid) and Attr('active').eq(True))
+        response = self._table.scan(FilterExpression=Attr('psid').eq(psid) and Attr('active').eq(True))
         logger.info(response['Items'])
         return response['Items']
 
@@ -59,12 +59,11 @@ class DynamoDBCampaigns(CampaignDB):
             logger.error(f'Campaign {uid} not found')
             return 404
 
-    def delete_campaign(self, uid, username=DEFAULT_USERNAME):
+    def delete_campaign(self, uid):
         logger.info(f'Inactivating Campaign: {uid}')
         item = self._table.get_item(Key={'campaingid': uid})['Item']
         if item is not None:
             now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
-            item['modified_by'] = username
             item['modified_timestamp'] = now
             item['active'] = False
             response = self._table.put_item(Item=item)
@@ -73,12 +72,11 @@ class DynamoDBCampaigns(CampaignDB):
             logger.error(f'Campaign {uid} not found')
             return 404
 
-    def add_adwords_campaign(self, uid, adwords_campaignid, username=DEFAULT_USERNAME):
+    def add_adwords_campaign(self, uid, adwords_campaignid):
         logger.info(f'Adding Adwords CampaignId: {uid}')
         item = self._table.get_item(Key={'campaingid': uid})['Item']
         if item is not None:
             now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
-            item['modified_by'] = username
             item['modified_timestamp'] = now
             item['adwords_campaignid'] = adwords_campaignid
             response = self._table.put_item(Item=item)

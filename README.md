@@ -1,8 +1,6 @@
-![CI](https://github.com/davidromero/tecnobot/workflows/CI/badge.svg)
 # Tecnobot
 
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/tecnobot.png?raw=true" width="558" height="507">
-
 
 ## Contents
 
@@ -114,11 +112,4 @@ JSON for POST /payments
 ### Add Creation Diagram
 <img src="https://github.com/davidromero/tecnobot/blob/master/docs/AddCreation_diagram.png?raw=true" width="62" height="345">
 
-## <a name="requirements"></a>Requirements
-
-- Python >= 3.6
-- pip >= 20.0.2
-- virtualenv >= 20.0.27
-- AWS CLI >= 1.18.69
-- chalice >= 1.15.1
 

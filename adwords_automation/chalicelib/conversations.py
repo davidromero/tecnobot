@@ -9,7 +9,7 @@ MARKETING_PACKAGES = {
 }
 
 
-def process_conversation(conversation, username):
+def process_conversation(conversation):
     uid = str(uuid4())[:13]
     now = str(datetime.datetime.now(pytz.timezone('America/Guatemala')))
     new_campaign = {
@@ -18,7 +18,6 @@ def process_conversation(conversation, username):
         'active': True,
         'created_timestamp': now,
         'modified_timestamp': now,
-        'modified_by': username,
         'budget_amount': get_budget_amount(conversation['marketing_package']),
         'budget_currency': 'USD',
         'slogan': conversation['slogan'],

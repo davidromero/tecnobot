@@ -42,6 +42,17 @@ def post_fail(message):
     )
 
 
+def get_success(response):
+    return Response(
+        status_code=200,
+        body={
+            'status': 200,
+            'payload': response
+        },
+        headers=response_headers
+    )
+
+
 def get_campaigns(campaign_list, message):
     if campaign_list is not None:
         return Response(

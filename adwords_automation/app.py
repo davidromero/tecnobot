@@ -50,6 +50,12 @@ def add_campaign():
         return custom_responses.get_campaigns(None, message)
 
 
+@app.route('/adwords', methods=['GET'], api_key_required=True)
+def list_campaigns():
+    response = get_app_db().scan_all_items()
+    return custom_responses.get_success(response)
+
+
 @app.route('/adwords', methods=['DELETE'], cors=cors_config)
 def delete_campaign():
     body = app.current_request.json_body
@@ -61,7 +67,7 @@ def delete_campaign():
             logger.info(f'Campaing was Deleted')
             return custom_responses.post_response(adwords_response['value'][0]['status'], '')
         else:
-            error_message = 'Campaign Could not be Deleted'
+            error_message = 'Campaign Could not be deleted'
             logger.info(error_message)
             return custom_responses.post_response(None, error_message)
     else:
