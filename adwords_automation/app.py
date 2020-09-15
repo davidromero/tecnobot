@@ -7,7 +7,7 @@ from chalicelib.adwords_actions import remove_campaign
 from chalicelib.config import TABLE_NAME, AWS_DEFAULT_REGION, cors_config
 from chalicelib.validations import validate_body
 
-app = Chalice(app_name='adwords_automation')
+app = Chalice(app_name='tecnobot_adwords')
 _DB = None
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
